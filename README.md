@@ -34,13 +34,12 @@ Funciona de manera **100% offline** (sin conexión a internet) e implementa una 
 Todas las complejas fórmulas de comisiones (comisión normal, porcentaje de comisión, y comisión adicional progresiva por cantidad de envíos) fueron implementadas y validadas con un script de verificación automatizado.
 
 ### Casos de Prueba Cumplidos:
-1. **Monto: $8.00, Envíos: 1** ➔ Comisión normal: $1.70, Adicional: $0.00, Comisión final: $1.70, Monto final: $6.30, Efectivo móvil: $5.94.
-2. **Monto: $32.57, Envíos: 1** ➔ Comisión normal: $3.26, Adicional: $0.00, Comisión final: $3.26, Monto final: $29.31, Efectivo móvil: $28.95.
-3. **Monto: $107.68, Envíos: 1** ➔ Comisión normal: $9.20, Adicional: $0.00, Comisión final: $9.20, Monto final: $98.48, Efectivo móvil: $98.12.
-4. **Monto: $8.00, Envíos: 2** ➔ Comisión normal: $1.70, Adicional: $0.25, Comisión final: `$1,70 + $0,25`, Monto final: $6.05, Efectivo móvil: $5.69.
-5. **Monto: $15.00, Envíos: 4** ➔ Comisión normal: $1.97, Adicional: $1.20, Comisión final: `$1,97 + $1,20`, Monto final: $11.83, Efectivo móvil: $11.47.
-6. **Monto: $32.57, Envíos: 10** ➔ Porcentaje comisión: 10.000%, Comisión normal: $3.26, Adicional: $2.60, Comisión final: `$3,26 + $2,60`, Monto final: $26.71, Efectivo móvil: $26.35.
-7. **Monto: $107.68, Envíos: 3** ➔ Porcentaje comisión: 8.500%, Comisión normal: $9.20, Adicional: $0.85, Comisión final: `$9,20 + $0,85`, Monto final: $97.63, Efectivo móvil: $97.27.
+1. **Monto: $8.00, Envíos: 1** ➔ Comisión final: $1.70, Monto final: $6.30, Efectivo móvil: $5.94.
+2. **Monto: $32.57, Envíos: 1** ➔ Comisión final: $3.26, Monto final: $29.31, Efectivo móvil: $28.95.
+3. **Monto: $107.68, Envíos: 1** ➔ Comisión final: $9.20, Monto final: $98.48, Efectivo móvil: $98.12.
+4. **Monto: $15.00, Envíos: 4** ➔ Comisión normal: $1.97, Adicional: $1.20, Comisión final: `$1,97 + $1,20`, Monto final: $11.83, Efectivo móvil: $11.47.
+5. **Monto: $32.57, Envíos: 10** ➔ Porcentaje comisión: 10.000%, Comisión normal: $3.26, Adicional: $2.60, Comisión final: `$3,26 + $2,60`, Monto final: $26.71, Efectivo móvil: $26.35.
+6. **Monto: $107.68, Envíos: 3** ➔ Porcentaje comisión: 8.500%, Comisión normal: $9.20, Adicional: $0.85, Comisión final: `$9,20 + $0,85`, Monto final: $97.63, Efectivo móvil: $97.27.
 
 ---
 
