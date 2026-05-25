@@ -31,8 +31,13 @@ export function formatCurrencyComma(value) {
  * @returns {string}
  */
 export function formatPercent(factor) {
-  if (factor === undefined || factor === null || isNaN(factor)) return '0.000%';
-  return `${(factor * 100).toFixed(3)}%`;
+  if (factor === undefined || factor === null || isNaN(factor)) return '0.00%';
+  const value = (factor * 100).toFixed(3);
+  // Remove trailing zero if the third decimal digit is zero
+  if (value.endsWith('0')) {
+    return `${value.slice(0, -1)}%`;
+  }
+  return `${value}%`;
 }
 
 /**

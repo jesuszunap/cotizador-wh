@@ -96,7 +96,8 @@ export function calcularPorcentajeComision(monto, comisionNormal) {
  * @returns {number}
  */
 export function calcularComisionAdicional(monto, envios) {
-  if (envios <= 1) {
+  // No additional commission for 1 or 2 shipments
+  if (envios <= 2) {
     return 0;
   }
 
