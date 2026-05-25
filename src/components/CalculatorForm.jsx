@@ -19,7 +19,36 @@ export default function CalculatorForm({
 }) {
   
   const handleMontoChange = (e) => {
-    setMontoInput(e.target.value);
+    const value = e.target.value;
+    
+    // Allow empty string to clear the input
+    if (value === '') {
+      setMontoInput('');
+      if (error) setError('');
+      return;
+    }
+
+    // Allow digits, comma and dot
+    if (/[^0-9.,]/.test(value)) {
+      setError('Solo se permiten números y un separador decimal.');
+      return;
+    }
+    
+    // Check multiple separators
+    const separators = value.match(/[.,]/g);
+    if (separators && separators.length > 1) {
+      setError('Solo se permite un separador decimal.');
+      return;
+    }
+
+    // Check more than 2 decimals
+    const parts = value.split(/[.,]/);
+    if (parts[1] && parts[1].length > 2) {
+      setError('Máximo 2 decimales permitidos.');
+      return;
+    }
+
+    setMontoInput(value);
     if (error) setError('');
   };
 
@@ -35,7 +64,7 @@ export default function CalculatorForm({
 
     const valorMonto = parseInputAmount(rawInput);
     if (isNaN(valorMonto) || valorMonto < 0.10) {
-      setError('Monto mínimo: $0.10. Por favor ingresa un monto válido.');
+      setError('Monto inválido. Mínimo $0.10.');
       return;
     }
 
@@ -64,7 +93,7 @@ export default function CalculatorForm({
       )}
 
       <div className="form-group">
-        <label className="form-label" htmlFor="monto-enviado">
+        <label className="form-label" htmlFor="monto">
           Monto enviado o a enviar ($)
         </label>
         <div className="input-wrapper">
@@ -72,7 +101,8 @@ export default function CalculatorForm({
             <DollarSign size={20} />
           </span>
           <input
-            id="monto-enviado"
+            id="monto"
+            name="monto"
             type="text"
             inputMode="decimal"
             placeholder="0.00"
@@ -80,6 +110,9 @@ export default function CalculatorForm({
             value={montoInput}
             onChange={handleMontoChange}
             autoComplete="off"
+            autoCorrect="off"
+            spellCheck={false}
+            aria-label="Monto enviado o a enviar"
             required
           />
         </div>
@@ -96,16 +129,16 @@ export default function CalculatorForm({
           backgroundColor: 'var(--input-bg)',
           border: '2px solid var(--input-border)',
           borderRadius: 'var(--radius-md)',
-          padding: '8px 16px',
+          padding: '12px 20px',
           justifyContent: 'space-between',
-          maxWidth: '280px'
+          width: '100%'
         }}>
           <button
             type="button"
             className="selector-btn"
             style={{
-              width: '40px',
-              height: '40px',
+              width: '48px',
+              height: '48px',
               borderRadius: '50%',
               padding: 0,
               display: 'flex',
@@ -124,7 +157,7 @@ export default function CalculatorForm({
           </button>
           
           <span style={{
-            fontSize: '1.15rem',
+            fontSize: '1.4rem',
             fontWeight: '800',
             color: 'var(--text-main)',
             userSelect: 'none'
@@ -136,8 +169,8 @@ export default function CalculatorForm({
             type="button"
             className="selector-btn"
             style={{
-              width: '40px',
-              height: '40px',
+              width: '48px',
+              height: '48px',
               borderRadius: '50%',
               padding: 0,
               display: 'flex',

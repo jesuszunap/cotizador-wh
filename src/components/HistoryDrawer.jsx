@@ -56,10 +56,10 @@ export default function HistoryDrawer({
               >
                 <div className="history-item-details">
                   <div className="history-item-primary">
-                    Monto: {formatCurrencyDot(item.monto)}
+                    {formatCurrencyDot(item.monto)}
                   </div>
                   <div className="history-item-secondary">
-                    Envíos: {item.envios} | Comisión: {formatComisionFinal(item.comisionNormal, item.comisionAdicional)}
+                    {item.envios === 1 ? '1 envío' : `${item.envios} envíos`} &bull; Comisión {formatComisionFinal(item.comisionNormal, item.comisionAdicional)}
                   </div>
                 </div>
                 

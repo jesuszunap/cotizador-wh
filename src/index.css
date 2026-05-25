@@ -169,7 +169,7 @@ body {
 
 @media (min-width: 768px) {
   .main-layout {
-    grid-template-columns: 1.1fr 1fr;
+    grid-template-columns: minmax(360px, 0.8fr) minmax(420px, 1.2fr);
     align-items: start;
     gap: 32px;
   }
@@ -245,13 +245,13 @@ body {
 
 .form-input {
   width: 100%;
-  padding: 16px 16px 16px 44px;
+  padding: 20px 20px 20px 48px;
   border-radius: var(--radius-md);
   border: 2px solid var(--input-border);
   background-color: var(--input-bg);
   color: var(--text-main);
   font-family: var(--font-sans);
-  font-size: 1.15rem;
+  font-size: 1.4rem;
   font-weight: 700;
   font-variant-numeric: tabular-nums lining-nums;
   letter-spacing: 0.2px;
@@ -464,6 +464,7 @@ body {
   padding-bottom: 16px;
   margin-bottom: 20px;
   border-bottom: 2px solid var(--border-card);
+  text-align: center;
 }
 
 .ticket-header {
@@ -855,8 +856,212 @@ body {
   opacity: 0.75;
 }
 
+.ticket-line--column {
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.ticket-efectivo-container {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 14px;
+}
+
+.ticket-line--clickable {
+  cursor: pointer;
+  display: flex;
+  justify-content: flex-start;
+  gap: 12px;
+  align-items: center;
+  margin-bottom: 0;
+  padding: 8px 0;
+  transition: opacity var(--transition-fast);
+  user-select: none;
+}
+
+.ticket-line--clickable:hover {
+  opacity: 0.8;
+}
+
+.ticket-toggle-icon {
+  font-size: 1.2rem;
+  font-weight: 800;
+  color: var(--text-muted);
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background-color: var(--border-card);
+  transition: background-color var(--transition-fast), color var(--transition-fast);
+}
+
+.ticket-line--clickable:hover .ticket-toggle-icon {
+  background-color: var(--primary);
+  color: white;
+}
+
+.ticket-line--expanded-value {
+  margin-top: 4px;
+  margin-bottom: 0;
+}
+
 .ticket-note {
   font-size: 0.95rem;
   color: var(--text-muted);
   font-weight: 600;
+}
+
+/* Info Banks Button & Popover */
+.btn-info-banks {
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2px;
+  border-radius: 50%;
+  transition: color var(--transition-fast), background-color var(--transition-fast);
+}
+
+.btn-info-banks:hover {
+  color: var(--primary);
+  background-color: rgba(139, 92, 246, 0.1);
+}
+
+.ticket-label {
+  position: relative; /* needed for the popover */
+}
+
+.banks-info-overlay {
+  display: none;
+}
+
+@keyframes popoverEnter {
+  0% { opacity: 0; transform: scale(0.95) translateY(4px); }
+  100% { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+@keyframes mobileModalEnter {
+  0% { opacity: 0; transform: translate(-50%, -48%) scale(0.95); }
+  100% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+}
+
+.banks-info-popover {
+  position: absolute;
+  bottom: 100%;
+  left: 0;
+  margin-bottom: 8px;
+  width: 250px;
+  background-color: var(--input-bg);
+  border: 1px solid var(--input-border);
+  border-radius: var(--radius-sm);
+  box-shadow: var(--shadow-md);
+  padding: 12px;
+  z-index: 100;
+  color: var(--text-main);
+  animation: popoverEnter 0.15s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+  transform-origin: bottom left;
+}
+
+.banks-info-popover::after {
+  content: '';
+  position: absolute;
+  top: 100%;
+  left: 20px;
+  border-width: 6px;
+  border-style: solid;
+  border-color: var(--input-bg) transparent transparent transparent;
+}
+
+.banks-info-popover::before {
+  content: '';
+  position: absolute;
+  top: 100%;
+  left: 19px;
+  border-width: 7px;
+  border-style: solid;
+  border-color: var(--input-border) transparent transparent transparent;
+  z-index: -1;
+}
+
+@media (max-width: 767px) {
+  .banks-info-overlay {
+    display: block;
+    position: fixed;
+    top: -100vh;
+    left: -100vw;
+    right: -100vw;
+    bottom: -100vh;
+    z-index: 999;
+    background: rgba(15, 23, 42, 0.18);
+    backdrop-filter: blur(2px);
+    -webkit-backdrop-filter: blur(2px);
+    animation: fadeIn 0.2s ease-out forwards;
+  }
+  [data-theme="dark"] .banks-info-overlay {
+    background: rgba(0, 0, 0, 0.45);
+  }
+  .banks-info-popover {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    bottom: auto;
+    width: 280px;
+    margin-bottom: 0;
+    z-index: 1000;
+    border-radius: var(--radius-md);
+    padding: 16px;
+    box-shadow: var(--shadow-lg);
+    animation: mobileModalEnter 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+    transform-origin: center;
+  }
+  .banks-info-popover::after,
+  .banks-info-popover::before {
+    display: none;
+  }
+}
+
+.banks-info-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+
+.banks-info-title {
+  font-weight: 800;
+  font-size: 0.95rem;
+  color: var(--text-main);
+}
+
+.btn-close-info {
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color var(--transition-fast);
+}
+
+.btn-close-info:hover {
+  background-color: var(--border-card);
+  color: var(--text-main);
+}
+
+.banks-info-content {
+  font-size: 0.8rem;
+  line-height: 1.35;
+  color: var(--text-muted);
+  font-weight: 500;
+  text-transform: none;
+  letter-spacing: normal;
+  white-space: normal;
 }

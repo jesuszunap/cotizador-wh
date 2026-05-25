@@ -1,5 +1,5 @@
-import React, { useRef, useState } from 'react';
-import { Copy, Download, Check, ArrowLeft } from 'lucide-react';
+import React, { useRef, useState, useEffect } from 'react';
+import { Copy, Download, Check, ArrowLeft, Info, X } from 'lucide-react';
 import { FaWhatsapp } from 'react-icons/fa';
 import { toPng } from 'html-to-image';
 import { 
@@ -37,11 +37,11 @@ function PercentDisplay({ factor }) {
  * @param {object} res - Calculation result data
  * @returns {string}
  */
-export function generateResultText(res) {
+export function generateResultText(res, isEfectivoExpanded = false) {
   const lines = [];
   const hasRate = res.mostrarPorcentaje && res.porcentajeFactor !== 0;
   
-  lines.push("Monto enviado o a enviar:");
+  lines.push("Monto enviado:");
   lines.push(formatCurrencyDot(res.monto));
   
   if (res.mostrarComisionAdicional) {
@@ -66,8 +66,8 @@ export function generateResultText(res) {
   lines.push("Monto final a transferir:");
   lines.push(formatCurrencyDot(res.montoFinal));
   
-  if (res.mostrarEfectivoMovil) {
-    lines.push("Efectivo Móvil (Banco del Barrio):");
+  if (res.mostrarEfectivoMovil && isEfectivoExpanded) {
+    lines.push("Efectivo Móvil:");
     lines.push(formatCurrencyDot(res.efectivoMovil));
   }
   
@@ -82,9 +82,12 @@ export default function ResultCard({ data, theme, onBack }) {
   const ticketRef = useRef(null);
   const [copied, setCopied] = useState(false);
   const [sharing, setSharing] = useState(false);
+  const [isEfectivoExpanded, setIsEfectivoExpanded] = useState(false);
+  const [isExportingImage, setIsExportingImage] = useState(false);
+  const [showInfo, setShowInfo] = useState(false);
 
   const handleCopy = async () => {
-    const text = generateResultText(data);
+    const text = generateResultText(data, isEfectivoExpanded);
     try {
       await navigator.clipboard.writeText(text);
       setCopied(true);
@@ -98,6 +101,8 @@ export default function ResultCard({ data, theme, onBack }) {
 
   const handleDownload = async () => {
     if (!ticketRef.current) return;
+    setIsExportingImage(true);
+    await new Promise(resolve => setTimeout(resolve, 50));
     try {
       const dataUrl = await toPng(ticketRef.current, {
         cacheBust: true,
@@ -115,11 +120,15 @@ export default function ResultCard({ data, theme, onBack }) {
       link.click();
     } catch (err) {
       console.error('Error generating image:', err);
+    } finally {
+      setIsExportingImage(false);
     }
   };
 
   const handleCopyImage = async () => {
     if (!ticketRef.current) return;
+    setIsExportingImage(true);
+    await new Promise(resolve => setTimeout(resolve, 50));
     try {
       const dataUrl = await toPng(ticketRef.current, {
         cacheBust: true,
@@ -150,12 +159,16 @@ export default function ResultCard({ data, theme, onBack }) {
     } catch (err) {
       console.error('Error copiando imagen:', err);
       alert('No se pudo copiar la imagen. Puedes descargarla o compartirla.');
+    } finally {
+      setIsExportingImage(false);
     }
   };
 
   const handleShareWhatsApp = async () => {
     if (!ticketRef.current) return;
     setSharing(true);
+    setIsExportingImage(true);
+    await new Promise(resolve => setTimeout(resolve, 50));
     try {
       // 1. Generate image using html-to-image
       const dataUrl = await toPng(ticketRef.current, {
@@ -187,16 +200,17 @@ export default function ResultCard({ data, theme, onBack }) {
         link.href = dataUrl;
         link.click();
         
-        const rawText = generateResultText(data);
+        const rawText = generateResultText(data, isEfectivoExpanded);
         const encodedText = encodeURIComponent(rawText);
         window.open(`https://api.whatsapp.com/send?text=${encodedText}`, '_blank');
       }
     } catch (err) {
       console.error('Sharing failed:', err);
       // Absolute fallback: Share text only
-      const text = generateResultText(data);
+      const text = generateResultText(data, isEfectivoExpanded);
       window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(text)}`, '_blank');
     } finally {
+      setIsExportingImage(false);
       setSharing(false);
     }
   };
@@ -211,7 +225,7 @@ export default function ResultCard({ data, theme, onBack }) {
         </div>
 
         <div className="ticket-line">
-          <div className="ticket-label">Monto enviado</div>
+          <div className="ticket-label">Monto enviado o a enviar</div>
           <div className="ticket-value ticket-value--monto">{formatCurrencyDot(data.monto)}</div>
         </div>
 
@@ -248,26 +262,75 @@ export default function ResultCard({ data, theme, onBack }) {
 
         {data.mostrarPorcentaje && data.porcentajeFactor !== 0 && (
           <div className="ticket-rate ticket-rate--global">
-            {data.mostrarComisionAdicional ? 'Tasa base aplicada' : 'Tasa aplicada'}: {formatPercent(data.porcentajeFactor)}
+            {data.mostrarComisionAdicional ? 'Tasa base aplicada' : 'Tasa aplicada'}: <PercentDisplay factor={data.porcentajeFactor} />
           </div>
         )}
 
         <div className="ticket-line ticket-line--separator">
-          <div className="ticket-label">Monto a transferir</div>
+          <div className="ticket-label" style={{ display: 'flex', alignItems: 'center', gap: '2px' }}>
+            Monto a transferir
+            {!isExportingImage && (
+              <button 
+                className="btn-info-banks" 
+                onClick={(e) => { e.stopPropagation(); setShowInfo(true); }}
+                onMouseEnter={() => window.innerWidth > 768 && setShowInfo(true)}
+                onMouseLeave={() => window.innerWidth > 768 && setShowInfo(false)}
+                aria-label="Información sobre bancos disponibles"
+                title="Bancos disponibles"
+                type="button"
+              >
+                <Info size={16} />
+              </button>
+            )}
+            
+            {showInfo && !isExportingImage && (
+              <>
+                <div className="banks-info-overlay" onClick={() => setShowInfo(false)} />
+                <div className="banks-info-popover">
+                  <div className="banks-info-header">
+                    <span className="banks-info-title">Bancos disponibles</span>
+                    <button className="btn-close-info" onClick={() => setShowInfo(false)} aria-label="Cerrar información">
+                      <X size={14} />
+                    </button>
+                  </div>
+                  <div className="banks-info-content">
+                    <p>Banco Guayaquil, Banco Pichincha, Banco del Pacífico, Banco Bolivariano, Deuna, Peigo, Banco del Austro, Banco Internacional, CoopMego, Binance Pay y World App.</p>
+                    <p style={{ marginTop: '8px' }}>Para otros bancos de Ecuador, se puede realizar una transferencia interbancaria sin costo adicional cuando el monto final a transferir sea mayor a $1.</p>
+                  </div>
+                </div>
+              </>
+            )}
+          </div>
           <div className="ticket-value highlight">
             {formatCurrencyDot(data.montoFinal)}
           </div>
         </div>
 
         {data.mostrarEfectivoMovil ? (
-          <div className="ticket-line">
-            <div className="ticket-label">Efectivo Móvil</div>
-            <div className="ticket-value ticket-value--efectivo">
-              {formatCurrencyDot(data.efectivoMovil)}
+          (!isExportingImage || isEfectivoExpanded) && (
+            <div className="ticket-efectivo-container">
+              <div 
+                className="ticket-line ticket-line--clickable"
+                onClick={() => setIsEfectivoExpanded(!isEfectivoExpanded)}
+              >
+                <div className="ticket-label" style={{ marginBottom: 0 }}>Efectivo Móvil</div>
+                {!isExportingImage && (
+                  <div className="ticket-toggle-icon">
+                    {isEfectivoExpanded ? '−' : '+'}
+                  </div>
+                )}
+              </div>
+              {isEfectivoExpanded && (
+                <div className="ticket-line ticket-line--expanded-value">
+                  <div className="ticket-value ticket-value--efectivo">
+                    {formatCurrencyDot(data.efectivoMovil)}
+                  </div>
+                </div>
+              )}
             </div>
-          </div>
+          )
         ) : (
-          <div className="ticket-line ticket-line--muted">
+          <div className="ticket-line ticket-line--muted ticket-line--column">
             <div className="ticket-label">Efectivo Móvil</div>
             <div className="ticket-note">No disponible para este monto</div>
           </div>
@@ -278,7 +341,7 @@ export default function ResultCard({ data, theme, onBack }) {
       <textarea 
         readOnly 
         className="copyable-text-area" 
-        value={generateResultText(data)} 
+        value={generateResultText(data, isEfectivoExpanded)} 
         id="hidden-copy-area"
       />
 
