@@ -31,6 +31,39 @@ export default function App() {
     setTheme(prev => (prev === 'dark' ? 'light' : 'dark'));
   };
 
+  // Auto‑cotizar from URL parameters (WhatsApp/autoresponder links)
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const montoRaw = params.get('monto');
+    if (!montoRaw) return;
+
+    // Normalise decimal separator and validate format (max 2 decimals, numeric only)
+    const montoNormalized = montoRaw.replace(',', '.');
+    const validMontoRegex = /^\d+(?:[.,]\d{1,2})?$/;
+    if (!validMontoRegex.test(montoRaw)) return;
+
+    const montoNum = parseFloat(montoNormalized);
+    if (isNaN(montoNum) || montoNum < 0.10) return;
+
+    // Envios (optional)
+    let enviosNum = 1;
+    const enviosRaw = params.get('envios');
+    if (enviosRaw) {
+      const parsedEnv = parseInt(enviosRaw, 10);
+      if (!isNaN(parsedEnv) && parsedEnv >= 1 && parsedEnv <= 10) {
+        enviosNum = parsedEnv;
+      }
+    }
+
+    // Populate form and trigger calculation
+    setMontoInput(montoNum.toString().replace('.', ',')); // keep display format similar to user input
+    setEnvios(enviosNum);
+    handleCalculate(montoNum, enviosNum);
+
+    // Clean URL (optional, safe for PWA/offline)
+    window.history.replaceState({}, document.title, location.pathname);
+  }, []);
+
   // Form & Result states
   const [montoInput, setMontoInput] = useState('');
   const [envios, setEnvios] = useState(1);
