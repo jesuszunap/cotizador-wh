@@ -3,6 +3,7 @@ import Header from './components/Header';
 import CalculatorForm from './components/CalculatorForm';
 import ResultCard from './components/ResultCard';
 import HistoryDrawer from './components/HistoryDrawer';
+import { FaWhatsapp, FaInstagram, FaFacebookF, FaUsers } from 'react-icons/fa';
 import { calcularCotizacion } from './utils/calculator';
 import { 
   getSavedTheme, 
@@ -146,6 +147,44 @@ export default function App() {
             error={error}
             setError={setError}
           />
+          <div className="social-links">
+            <a 
+              href="https://wa.me/593995180410" 
+              target="_blank" 
+              rel="noopener noreferrer" 
+              aria-label="WhatsApp"
+              title="Escríbenos a WhatsApp"
+            >
+              <FaWhatsapp size={20} />
+            </a>
+            <a 
+              href="https://www.instagram.com/world.hezu/" 
+              target="_blank" 
+              rel="noopener noreferrer" 
+              aria-label="Instagram"
+              title="Síguenos en Instagram"
+            >
+              <FaInstagram size={20} />
+            </a>
+            <a 
+              href="https://www.facebook.com/profile.php?id=61567371940441&locale=es_LA" 
+              target="_blank" 
+              rel="noopener noreferrer" 
+              aria-label="Facebook"
+              title="Síguenos en Facebook"
+            >
+              <FaFacebookF size={19} />
+            </a>
+            <a 
+              href="https://www.facebook.com/groups/3823900527841007?locale=es_LA" 
+              target="_blank" 
+              rel="noopener noreferrer" 
+              aria-label="Grupo de Facebook"
+              title="Únete a nuestro Grupo de Facebook"
+            >
+              <FaUsers size={20} />
+            </a>
+          </div>
         </section>
 
         {/* Right Column: Calculations Results */}

@@ -80,7 +80,7 @@ export default function CalculatorForm({
   };
 
   return (
-    <form className="glass-card" onSubmit={handleSubmit}>
+    <form className="glass-card form-card calculator-card" onSubmit={handleSubmit}>
       <h2 className="card-title">
         <DollarSign size={22} style={{ color: 'var(--primary)' }} />
         Nueva Cotización
@@ -106,7 +106,7 @@ export default function CalculatorForm({
             type="text"
             inputMode="decimal"
             placeholder="0.00"
-            className="form-input"
+            className="form-input amount-input"
             value={montoInput}
             onChange={handleMontoChange}
             autoComplete="off"
@@ -122,7 +122,7 @@ export default function CalculatorForm({
         <label className="form-label">
           Cantidad de envíos
         </label>
-        <div style={{
+        <div className="envios-control" style={{
           display: 'flex',
           alignItems: 'center',
           gap: '16px',
@@ -131,7 +131,8 @@ export default function CalculatorForm({
           borderRadius: 'var(--radius-md)',
           padding: '12px 20px',
           justifyContent: 'space-between',
-          width: '100%'
+          width: '100%',
+          boxSizing: 'border-box'
         }}>
           <button
             type="button"
@@ -190,10 +191,10 @@ export default function CalculatorForm({
         </div>
       </div>
 
-      <div className="form-buttons">
+      <div className="form-buttons form-actions">
         <button type="submit" className="btn btn-primary" id="btn-cotizar">
           Cotizar
-          <ArrowRight size={18} />
+          <ArrowRight size={20} strokeWidth={2.25} className="form-action-icon" />
         </button>
         <button
           type="button"
@@ -201,7 +202,7 @@ export default function CalculatorForm({
           onClick={handleClearClick}
           id="btn-limpiar"
         >
-          <Trash2 size={18} />
+          <Trash2 size={20} strokeWidth={2.25} className="form-action-icon" />
           Limpiar
         </button>
       </div>
